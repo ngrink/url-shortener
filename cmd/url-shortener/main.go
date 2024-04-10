@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/ngrink/url-shortener/internal/config"
 	"github.com/ngrink/url-shortener/internal/database"
+	"github.com/ngrink/url-shortener/internal/modules/users"
 )
 
 func main() {
@@ -20,6 +21,7 @@ func main() {
 
 	// setup routes
 	router := mux.NewRouter()
+	users.SetupRoutes(router)
 
 	// run server
 	addr := fmt.Sprintf(":%s", os.Getenv("APP_PORT"))
