@@ -11,3 +11,15 @@ type Url struct {
 	OriginalURL string `json:"original_url" db:"original_url"`
 	Visits      uint   `json:"visits" db:"visits"`
 }
+
+type Visit struct {
+	ID        uint   `json:"id" db:"id" gorm:"primarykey"`
+	UrlId     uint   `json:"url_id" db:"url_id"`
+	IpAddress string `json:"ip_address" db:"ip_address"`
+	UserAgent string `json:"user_agent" db:"user_agent"`
+}
+
+type VisitResponse struct {
+	IpAddress string `json:"ip_address" db:"ip_address"`
+	UserAgent string `json:"user_agent" db:"user_agent"`
+}

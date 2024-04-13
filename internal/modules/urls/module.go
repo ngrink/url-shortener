@@ -25,4 +25,5 @@ func SetupAPIRoutes(public *mux.Router, protected *mux.Router) {
 	protected.HandleFunc("/users/{userId}/urls", Controller.GetUserUrls).Methods("GET")
 	protected.HandleFunc("/urls/{id}", Controller.GetUrl).Methods("GET")
 	protected.HandleFunc("/urls/{id}", Controller.DeleteUrl).Methods("DELETE")
+	protected.HandleFunc("/urls/{id}/visits", Controller.GetUrlVisits).Methods("GET")
 }

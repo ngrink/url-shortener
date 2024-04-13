@@ -11,6 +11,8 @@ type IUrlsService interface {
 	GetUrl(id uint64) (Url, error)
 	GetUrlByKey(key string) (Url, error)
 	DeleteUrl(id uint64) error
+	RegisterVisit(urlId uint, userAgent, ipAddress string) (Visit, error)
+	GetUrlVisits(urlId uint64) ([]Visit, error)
 }
 
 type UrlsService struct {
@@ -86,6 +88,30 @@ func (s *UrlsService) DeleteUrl(id uint64) error {
 	}
 
 	return nil
+}
+
+func (s *UrlsService) RegisterVisit(urlId uint, userAgent, ipAddress string) (Visit, error) {
+	visit := Visit{
+		UrlId:     urlId,
+		UserAgent: userAgent,
+		IpAddress: ipAddress,
+	}
+
+	visit, err := s.repo.RegisterVisit(visit)
+	if err != nil {
+		return Visit{}, err
+	}
+
+	return visit, nil
+}
+
+func (s *UrlsService) GetUrlVisits(urlId uint64) ([]Visit, error) {
+	visits, err := s.repo.GetUrlVisits(urlId)
+	if err != nil {
+		return []Visit{}, err
+	}
+
+	return visits, nil
 }
 
 func generateShortKey() string {
