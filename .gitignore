@@ -22,4 +22,5 @@ go.work
 
 .env.*
 !.env.local
+bin/
 tmp/

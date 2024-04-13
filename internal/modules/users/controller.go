@@ -2,11 +2,11 @@ package users
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/ngrink/url-shortener/internal/utils"
 )
 
 type UsersController struct {
@@ -19,29 +19,15 @@ func NewUsersController(usersService IUsersService) *UsersController {
 
 func (c *UsersController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var data CreateUserDto
-
-	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&data)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	utils.ParseJSON(w, r, &data)
 
 	user, err := c.usersService.CreateUser(data)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		utils.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
 
-	res, err := json.Marshal(user)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	utils.WriteJSON(w, http.StatusCreated, user)
 }
 
 func (c *UsersController) GetAllUsers(w http.ResponseWriter, r *http.Request) {
@@ -51,17 +37,7 @@ func (c *UsersController) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(users)
-
-	res, err := json.Marshal(users)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	utils.WriteJSON(w, http.StatusOK, users)
 }
 
 func (c *UsersController) GetUser(w http.ResponseWriter, r *http.Request) {
