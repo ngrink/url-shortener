@@ -25,17 +25,17 @@ type IUsersRepository interface {
 
 ----------------------------------------------------------------------------
 */
-type UsersRepository struct {
+type UsersSQLRepository struct {
 	db *gorm.DB
 }
 
-func NewUsersRepository(db *gorm.DB) *UsersRepository {
+func NewUsersSQLRepository(db *gorm.DB) *UsersSQLRepository {
 	db.AutoMigrate(&User{})
 
-	return &UsersRepository{db: db}
+	return &UsersSQLRepository{db: db}
 }
 
-func (r *UsersRepository) CreateUser(user User) (User, error) {
+func (r *UsersSQLRepository) CreateUser(user User) (User, error) {
 	result := r.db.Create(&user)
 	if result.Error != nil {
 		return User{}, result.Error
@@ -44,14 +44,14 @@ func (r *UsersRepository) CreateUser(user User) (User, error) {
 	return user, nil
 }
 
-func (r *UsersRepository) GetAllUsers() ([]User, error) {
+func (r *UsersSQLRepository) GetAllUsers() ([]User, error) {
 	users := []User{}
 	r.db.Find(&users)
 
 	return users, nil
 }
 
-func (r *UsersRepository) GetUser(id uint64) (User, error) {
+func (r *UsersSQLRepository) GetUser(id uint64) (User, error) {
 	user := User{}
 	result := r.db.Find(&user, id)
 	if result.RowsAffected == 0 {
@@ -61,7 +61,7 @@ func (r *UsersRepository) GetUser(id uint64) (User, error) {
 	return user, nil
 }
 
-func (r *UsersRepository) GetUserByEmail(email string) (User, error) {
+func (r *UsersSQLRepository) GetUserByEmail(email string) (User, error) {
 	user := User{}
 	result := r.db.Where("email = ?", email).Find(&user)
 	if result.RowsAffected == 0 {
@@ -71,7 +71,7 @@ func (r *UsersRepository) GetUserByEmail(email string) (User, error) {
 	return user, nil
 }
 
-func (r *UsersRepository) UpdateUser(id uint64, data UpdateUserDto) (User, error) {
+func (r *UsersSQLRepository) UpdateUser(id uint64, data UpdateUserDto) (User, error) {
 	user := User{}
 	result := r.db.Find(&user, id)
 	if result.RowsAffected == 0 {
@@ -84,7 +84,7 @@ func (r *UsersRepository) UpdateUser(id uint64, data UpdateUserDto) (User, error
 	return user, nil
 }
 
-func (r *UsersRepository) DeleteUser(id uint64) error {
+func (r *UsersSQLRepository) DeleteUser(id uint64) error {
 	user := User{}
 	result := r.db.Find(&user, id)
 	if result.RowsAffected == 0 {

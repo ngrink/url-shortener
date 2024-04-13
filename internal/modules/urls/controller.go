@@ -1,24 +1,26 @@
-package users
+package urls
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/ngrink/url-shortener/internal/modules/auth"
 )
 
-type UsersController struct {
-	usersService IUsersService
+type UrlsController struct {
+	service IUrlsService
 }
 
-func NewUsersController(usersService IUsersService) *UsersController {
-	return &UsersController{usersService: usersService}
+func NewUrlsController(service IUrlsService) *UrlsController {
+	return &UrlsController{service: service}
 }
 
-func (c *UsersController) CreateUser(w http.ResponseWriter, r *http.Request) {
-	var data CreateUserDto
+func (c *UrlsController) CreateUrl(w http.ResponseWriter, r *http.Request) {
+	userId := auth.GetUserIdFromContext(r)
+
+	var data CreateUrlDto
 
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&data)
@@ -27,33 +29,13 @@ func (c *UsersController) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := c.usersService.CreateUser(data)
+	url, err := c.service.CreateUrl(userId, data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	res, err := json.Marshal(user)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
-}
-
-func (c *UsersController) GetAllUsers(w http.ResponseWriter, r *http.Request) {
-	users, err := c.usersService.GetAllUsers()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	fmt.Println(users)
-
-	res, err := json.Marshal(users)
+	res, err := json.Marshal(url)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -64,7 +46,50 @@ func (c *UsersController) GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	w.Write(res)
 }
 
-func (c *UsersController) GetUser(w http.ResponseWriter, r *http.Request) {
+func (c *UrlsController) GetAllUrls(w http.ResponseWriter, r *http.Request) {
+	urls, err := c.service.GetAllUrls()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	res, err := json.Marshal(urls)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(res)
+}
+
+func (c *UrlsController) GetUserUrls(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	userId, err := strconv.ParseUint(vars["userId"], 10, 64)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	urls, err := c.service.GetUserUrls(userId)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	res, err := json.Marshal(urls)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(res)
+}
+
+func (c *UrlsController) GetUrl(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.ParseUint(vars["id"], 10, 64)
 	if err != nil {
@@ -72,13 +97,13 @@ func (c *UsersController) GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := c.usersService.GetUser(id)
+	url, err := c.service.GetUrl(id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	res, err := json.Marshal(user)
+	res, err := json.Marshal(url)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -89,7 +114,7 @@ func (c *UsersController) GetUser(w http.ResponseWriter, r *http.Request) {
 	w.Write(res)
 }
 
-func (c *UsersController) UpdateUser(w http.ResponseWriter, r *http.Request) {
+func (c *UrlsController) DeleteUrl(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.ParseUint(vars["id"], 10, 64)
 	if err != nil {
@@ -97,41 +122,7 @@ func (c *UsersController) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var data UpdateUserDto
-
-	decoder := json.NewDecoder(r.Body)
-	err = decoder.Decode(&data)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	user, err := c.usersService.UpdateUser(id, data)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	res, err := json.Marshal(user)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
-}
-
-func (c *UsersController) DeleteUser(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.ParseUint(vars["id"], 10, 64)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	err = c.usersService.DeleteUser(id)
+	err = c.service.DeleteUrl(id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -140,4 +131,17 @@ func (c *UsersController) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("OK"))
+}
+
+func (c *UrlsController) RedirectByKey(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	key := vars["key"]
+
+	url, err := c.service.GetUrlByKey(key)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	http.Redirect(w, r, url.OriginalURL, http.StatusMovedPermanently)
 }
