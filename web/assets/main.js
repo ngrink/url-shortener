@@ -62,10 +62,10 @@ function addEventListeners() {
 function handleGenerateURL(e) {
     e.preventDefault()
 
-    let originalURL = document.getElementById("url").value
-    let customKey = document.getElementById("custom_url").value
+    let originalURL = document.getElementById("url")
+    let customKey = document.getElementById("custom_url")
 
-    if (originalURL.length === 0 || !isValidHttpUrl(originalURL)) {
+    if (originalURL.value.length === 0 || !isValidHttpUrl(originalURL.value)) {
         alert("Please enter a valid URL")
         return
     }
@@ -78,12 +78,24 @@ function handleGenerateURL(e) {
             "Authorization": `Bearer ${getAccessToken()}`
         },
         body: JSON.stringify({
-            original_url: originalURL,
-            custom_key: customKey
-        })
+            original_url: originalURL.value,
+            custom_key: customKey.value
+        }),
     })
-    .then(res => res.json())
-    .then(data => handleResponse(data))
+    .then(res => {
+        return new Promise((resolve, reject) => res.json()
+            .then(data => {
+                if (!res.ok) {
+                    reject(Error(data.error))
+                }
+                resolve(data)
+            })
+    )})
+    .then(data => {
+        originalURL.value = "";
+        customKey.value = "";
+        handleResponse(data)
+    })
     .catch(err => handleError(err))
 
     function handleResponse(data) {
@@ -91,8 +103,7 @@ function handleGenerateURL(e) {
     }
 
     function handleError(err) {
-        console.log(err)
-        alert(err.message)
+        document.getElementById("url-form__error").innerHTML = err.message
     }
 }
 
@@ -194,17 +205,16 @@ function handleLogout(e) {
 }
 
 function ListenURLVisitEvents() {
-    let table = document.getElementById("visits-table");
-    if (!table) {
-        return 
-    }
+    // let table = document.getElementById("visits-table");
+    // if (!table) {
+    //     return 
+    // }
 
-    let urlId = table.dataset.urlId
-    let eventSource = new EventSource(`/api/v1/urls/${urlId}/events`);
+    // let urlId = table.dataset.urlId
+    // let eventSource = new EventSource(`/api/v1/urls/${urlId}/events`);
 
-    eventSource.onmessage = (event) => {
-        console.log(event)
-        console.log(event.data);
-        // document.getElementById("random-number").innerHTML = event.data;
-    }
+    // eventSource.onmessage = (event) => {
+    //     console.log(event)
+    //     console.log(event.data);
+    // }
 }
