@@ -2,17 +2,19 @@
 <table class="table url-table">
     <thead>
       <tr>
-        <th scope="col">Short URL</th>
+        <th scope="col">Key</th>
         <th scope="col">Original URL</th>
         <th scope="col">Visits</th>
         <th scope="col">Created At</th>
+        <th scope="col"></th>
+
       </tr>
     </thead>
     <tbody>
         {{ range . }}
         <tr>
-            <td id="short-url">
-                <a href="{{ .ShortURL }}">{{ .ShortURL }}</a>
+            <td id="short-url" class="short-url">
+                <a href="{{ .ShortURL }}">{{ .Key }}</a>
             </td>
             <td id="original-url" class="original-url">
                 <a href= {{ .OriginalURL }}>{{ .OriginalURL }}</a>

@@ -2,6 +2,7 @@ package urls
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -32,8 +33,13 @@ func (c *UrlsController) CreateUrl(w http.ResponseWriter, r *http.Request) {
 
 	url, err := c.service.CreateUrl(userId, data)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		if errors.Is(err, ErrKeyExists) {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		} else {
+			utils.WriteError(w, http.StatusInternalServerError, err)
 		return
+		}
 	}
 
 	utils.WriteJSON(w, http.StatusCreated, url)

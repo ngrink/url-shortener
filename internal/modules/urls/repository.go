@@ -59,7 +59,7 @@ func (r *UrlsSQLRepository) GetAllUrls() ([]Url, error) {
 
 func (r *UrlsSQLRepository) GetUserUrls(userId uint64) ([]Url, error) {
 	urls := []Url{}
-	result := r.db.Where("user_id = ?", userId).Find(&urls)
+	result := r.db.Where("user_id = ?", userId).Order("created_at desc").Find(&urls)
 	if result.Error != nil {
 		return []Url{}, result.Error
 	}

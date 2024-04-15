@@ -15,6 +15,15 @@ body {
     height: 100%;
 }
 
+::placeholder {
+    color: #aaa !important;
+    opacity: 1; 
+}
+  
+::-ms-input-placeholder {
+    color: #aaa !important;
+}
+
 /* ----------------------------------------------
     Typography
 ---------------------------------------------- */
@@ -84,6 +93,24 @@ h3 {
     margin-bottom: 16px;
 }
 
+
+/* ----------------------------------------------
+    URL table
+---------------------------------------------- */
+.url-table td {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;    
+}
+
+.short-url {
+    max-width: 250px;
+}
+
+.original-url {
+    max-width: 750px;
+}
+
 /* ----------------------------------------------
     Index page
 ---------------------------------------------- */
@@ -105,4 +132,10 @@ h3 {
 
 .url-form__row *:not(:first-child){
     flex: 0 0 auto
+}
+
+.url-form__error {
+    margin-top: 8px;
+    color: red;
+    height: 10px;
 }
