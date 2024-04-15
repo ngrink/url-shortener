@@ -1,0 +1,37 @@
+{{ define "url-table" }}
+<table class="table url-table">
+    <thead>
+      <tr>
+        <th scope="col">Short URL</th>
+        <th scope="col">Original URL</th>
+        <th scope="col">Visits</th>
+        <th scope="col">Created At</th>
+      </tr>
+    </thead>
+    <tbody>
+        {{ range . }}
+        <tr>
+            <td id="short-url">
+                <a href="{{ .ShortURL }}">{{ .ShortURL }}</a>
+            </td>
+            <td id="original-url" class="original-url">
+                <a href= {{ .OriginalURL }}>{{ .OriginalURL }}</a>
+            </td>
+            <td id="visits">
+                {{ .Visits }}
+            </td>
+            <td id="created-at">
+                {{ .CreatedAt }}
+            </td>
+            <td>
+                <a href="/urls/{{.ID}}">
+                    <svg style="width: 25px; height: 25px" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                    </svg>  
+                </a>                
+            </td>
+        </tr>
+        {{ end}}
+    </tbody>
+</table>
+{{ end }}

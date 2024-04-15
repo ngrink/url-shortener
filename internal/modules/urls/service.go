@@ -2,6 +2,7 @@ package urls
 
 import (
 	"math/rand"
+	"os"
 )
 
 type IUrlsService interface {
@@ -30,6 +31,7 @@ func (s *UrlsService) CreateUrl(userId uint, data CreateUrlDto) (Url, error) {
 	url := Url{
 		UserId:      userId,
 		Key:         key,
+		ShortURL:    os.Getenv("APP_HOST") + "/" + key,
 		OriginalURL: data.OriginalUrl,
 		Visits:      0,
 	}

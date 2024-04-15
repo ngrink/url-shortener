@@ -36,15 +36,7 @@ func (c *UrlsController) CreateUrl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := json.Marshal(url)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	utils.WriteJSON(w, http.StatusCreated, url)
 }
 
 func (c *UrlsController) GetAllUrls(w http.ResponseWriter, r *http.Request) {
