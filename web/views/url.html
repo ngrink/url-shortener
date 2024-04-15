@@ -1,0 +1,10 @@
+{{ define "content" }}
+
+<div class="data">
+    {{ template "url-table" .Urls}}
+
+    <h2 class="visits-header">Visits</h2>
+    {{ template "visits-table" .}}
+</div>
+
+{{ end }}

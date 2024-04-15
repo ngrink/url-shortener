@@ -1,0 +1,16 @@
+{{ define "content" }}
+	<form class="login-form" id="js_login-form">
+			<div class="mb-3">
+				<label for="login" class="form-label">Login</label>
+				<input name="login" type="text" class="form-control" id="login" placeholder="example@mail.ru">
+			</div>
+			<div class="mb-3">
+				<label for="password" class="form-label">Password</label>
+				<input name="password" type="password" class="form-control" id="password" placeholder="********">
+			</div>
+			<div>
+				<button type="submit" class="btn btn-secondary">Log in</button>
+				<a href="/register" class="btn btn-link">Sign up</a>
+			</div>
+	</form>
+{{ end }}

@@ -1,0 +1,26 @@
+{{ define "visits-table" }}
+<table class="table" id="visits-table" data-url-id={{ if .Urls }}{{ (index .Urls 0).ID }}{{ end }}>
+    <thead>
+      <tr>
+        <th scope="col">IP Address</th>
+        <th scope="col">User Agent</th>
+        <th scope="col">Time</th>
+      </tr>
+    </thead>
+    <tbody>
+        {{ range .Visits}}
+        <tr>
+            <td>
+                {{ .IpAddress }}
+            </th>
+            <td>
+                {{ .UserAgent }}
+            </td>
+            <td>
+                {{ .CreatedAt }}
+            </td>
+        </tr>
+        {{ end}}
+    </tbody>
+</table>
+{{ end }}

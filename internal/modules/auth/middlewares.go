@@ -3,7 +3,6 @@ package auth
 import (
 	"context"
 	"net/http"
-	"strings"
 
 	"github.com/dgrijalva/jwt-go"
 )
@@ -14,14 +13,13 @@ const UserIdKey contextKey = "userID"
 
 func Authorized(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		authorization := r.Header.Get("Authorization")
-		words := strings.Split(authorization, " ")
-		if len(words) != 2 || words[0] != "Bearer" {
+		cookieToken, err := r.Cookie("token")
+		if err != nil {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
 
-		token, err := validateJwtToken(words[1])
+		token, err := validateJwtToken(cookieToken.Value)
 		if err != nil || !token.Valid {
 			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return

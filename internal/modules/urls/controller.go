@@ -7,6 +7,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/ngrink/url-shortener/internal/modules/auth"
+	"github.com/ngrink/url-shortener/internal/utils"
 )
 
 type UrlsController struct {
@@ -35,15 +36,7 @@ func (c *UrlsController) CreateUrl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	res, err := json.Marshal(url)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(res)
+	utils.WriteJSON(w, http.StatusCreated, url)
 }
 
 func (c *UrlsController) GetAllUrls(w http.ResponseWriter, r *http.Request) {
@@ -143,5 +136,31 @@ func (c *UrlsController) RedirectByKey(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	c.service.RegisterVisit(url.ID, r.UserAgent(), r.RemoteAddr)
+
 	http.Redirect(w, r, url.OriginalURL, http.StatusMovedPermanently)
+}
+
+func (c *UrlsController) GetUrlVisits(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.ParseUint(vars["id"], 10, 64)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	visits, err := c.service.GetUrlVisits(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	visitsResponse := make([]VisitResponse, len(visits))
+	for i, visit := range visits {
+		visitsResponse[i] = VisitResponse{IpAddress: visit.IpAddress, UserAgent: visit.UserAgent}
+	}
+
+	utils.WriteJSON(w, http.StatusOK, map[string]interface{}{
+		"visits": visitsResponse,
+	})
 }

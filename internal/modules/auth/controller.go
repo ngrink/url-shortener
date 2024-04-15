@@ -3,6 +3,7 @@ package auth
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 )
 
 type AuthController struct {
@@ -34,6 +35,17 @@ func (c *AuthController) LoginByCredentials(w http.ResponseWriter, r *http.Reque
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	expire := time.Now().AddDate(0, 0, 7)
+	cookie := http.Cookie{
+		Name:     "token",
+		Value:    data.Token,
+		Path:     "/",
+		Expires:  expire,
+		Secure:   false,
+		HttpOnly: true,
+	}
+	http.SetCookie(w, &cookie)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

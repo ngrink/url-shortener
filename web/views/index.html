@@ -1,0 +1,21 @@
+{{ define "content" }}
+	<div>
+		<form class="url-form" id="js_url-form">
+			<div class="url-form__row">
+				<div>
+					<label for="url" class="form-label">Original URL</label>
+					<input name="url" type="text" class="form-control" id="url" placeholder="https://example.com/hello">
+				</div>
+				<div>
+					<label for="custom_url" class="form-label">Custom Key</label>
+					<input name="custom_url" type="text" class="form-control" id="custom_url" placeholder="hello">
+				</div>
+				<button type="submit" class="btn btn-primary">Generate</button>
+			</div>
+		</form>
+	</div>
+	<div>
+		<h2 class="mt-5 mb-4">URLs</h2>
+		{{ template "url-table" .Urls}}
+	</div>
+{{ end }}

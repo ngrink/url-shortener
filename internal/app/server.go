@@ -2,6 +2,7 @@ package app
 
 import (
 	"log"
+	"mime"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -9,6 +10,7 @@ import (
 	"github.com/ngrink/url-shortener/internal/modules/auth"
 	"github.com/ngrink/url-shortener/internal/modules/urls"
 	"github.com/ngrink/url-shortener/internal/modules/users"
+	"github.com/ngrink/url-shortener/web"
 	"gorm.io/gorm"
 )
 
@@ -27,11 +29,13 @@ func NewServer(addr string) *Server {
 
 	server.SetupRoutes()
 	server.SetupAPIRoutes()
+	server.ServeStatic()
 
 	return server
 }
 
 func (s *Server) SetupRoutes() {
+	web.SetupRoutes(s.router)
 	urls.SetupRoutes(s.router)
 }
 
@@ -44,6 +48,16 @@ func (s *Server) SetupAPIRoutes() {
 	users.SetupAPIRoutes(public, protected)
 	auth.SetupAPIRoutes(public, protected)
 	urls.SetupAPIRoutes(public, protected)
+}
+
+func (s *Server) ServeStatic() {
+	mime.AddExtensionType(".css", "text/css")
+	mime.AddExtensionType(".js", "application/javascript")
+
+	fs := http.FileServer(http.Dir("./web/assets/"))
+	s.router.PathPrefix("/assets").Handler(
+		http.StripPrefix("/assets", fs),
+	)
 }
 
 func (s *Server) Run() {

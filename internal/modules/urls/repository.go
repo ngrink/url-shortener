@@ -13,6 +13,8 @@ type IUrlsRepository interface {
 	GetUrl(id uint64) (Url, error)
 	GetUrlByKey(key string) (Url, error)
 	DeleteUrl(id uint64) error
+	RegisterVisit(visit Visit) (Visit, error)
+	GetUrlVisits(urlId uint64) ([]Visit, error)
 }
 
 /*
@@ -27,7 +29,11 @@ type UrlsSQLRepository struct {
 }
 
 func NewUrlsSqlRepository(db *gorm.DB) *UrlsSQLRepository {
-	db.AutoMigrate(&Url{})
+	db.AutoMigrate(
+		&Url{}, &Visit{},
+	)
+	db.Migrator().DropColumn(&Visit{}, "updated_at")
+	db.Migrator().DropColumn(&Visit{}, "deleted_at")
 
 	return &UrlsSQLRepository{db: db}
 }
@@ -78,6 +84,9 @@ func (r *UrlsSQLRepository) GetUrlByKey(key string) (Url, error) {
 		return Url{}, fmt.Errorf("Url not found")
 	}
 
+	url.Visits += 1
+	r.db.Save(&url)
+
 	return url, nil
 }
 
@@ -91,4 +100,23 @@ func (r *UrlsSQLRepository) DeleteUrl(id uint64) error {
 	r.db.Delete(&url)
 
 	return nil
+}
+
+func (r *UrlsSQLRepository) RegisterVisit(visit Visit) (Visit, error) {
+	result := r.db.Create(&visit)
+	if result.Error != nil {
+		return Visit{}, result.Error
+	}
+
+	return visit, nil
+}
+
+func (r *UrlsSQLRepository) GetUrlVisits(urlId uint64) ([]Visit, error) {
+	visits := []Visit{}
+	result := r.db.Where("url_id = ?", urlId).Find(&visits)
+	if result.Error != nil {
+		return []Visit{}, result.Error
+	}
+
+	return visits, nil
 }
