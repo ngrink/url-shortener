@@ -41,7 +41,25 @@ cd url-shortener
 ```bash
 go mod tidy
 ```
-4. Run application
+4. Update env configuration
+```bash
+vim config/.env.local
+```
+
+```env
+APP_PORT=7000
+APP_HOST=http://localhost:7000
+
+POSTGRES_HOST=<POSTGRES_HOST>
+POSTGRES_PORT=<POSTGRES_PORT>
+POSTGRES_USER=<POSTGRES_USER>
+POSTGRES_PASSWORD=<POSTGRES_PASSWORD>
+POSTGRES_DB=<POSTGRES_DB>
+
+JWT_SECRET="jwUjak517ayqnJaBZHu8i9qybzz"
+```
+
+5. Run application
 ```bash
 go run ./cmd/url-shortener
 ```
