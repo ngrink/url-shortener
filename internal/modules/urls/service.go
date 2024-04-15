@@ -1,8 +1,13 @@
 package urls
 
 import (
+	"errors"
 	"math/rand"
 	"os"
+)
+
+var (
+	ErrKeyExists = errors.New("key already exists")
 )
 
 type IUrlsService interface {
@@ -27,7 +32,21 @@ func NewUrlsService(repo IUrlsRepository) *UrlsService {
 }
 
 func (s *UrlsService) CreateUrl(userId uint, data CreateUrlDto) (Url, error) {
-	key := generateShortKey()
+	key := data.CustomKey
+
+	if key != "" {
+		if s.KeyExists(key) {
+			return Url{}, ErrKeyExists
+		}
+	} else {
+		for {
+			key = generateShortKey()
+			if !s.KeyExists(key) {
+				break
+			}
+		}
+	}
+
 	url := Url{
 		UserId:      userId,
 		Key:         key,
@@ -114,6 +133,11 @@ func (s *UrlsService) GetUrlVisits(urlId uint64) ([]Visit, error) {
 	}
 
 	return visits, nil
+}
+
+func (s *UrlsService) KeyExists(key string) bool {
+	_, err := s.GetUrlByKey(key)
+	return err == nil
 }
 
 func generateShortKey() string {
