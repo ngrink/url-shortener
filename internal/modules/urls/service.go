@@ -7,6 +7,7 @@ import (
 )
 
 var (
+	ErrNotFound  = errors.New("not found")
 	ErrKeyExists = errors.New("key already exists")
 )
 
@@ -19,6 +20,7 @@ type IUrlsService interface {
 	DeleteUrl(id uint64) error
 	RegisterVisit(urlId uint, userAgent, ipAddress string) (Visit, error)
 	GetUrlVisits(urlId uint64) ([]Visit, error)
+	CheckOwner(userId, urlId uint64) (bool, error)
 }
 
 type UrlsService struct {
@@ -138,6 +140,19 @@ func (s *UrlsService) GetUrlVisits(urlId uint64) ([]Visit, error) {
 func (s *UrlsService) KeyExists(key string) bool {
 	_, err := s.GetUrlByKey(key)
 	return err == nil
+}
+
+func (s *UrlsService) CheckOwner(userId, urlId uint64) (bool, error) {
+	url, err := s.repo.GetUrl(urlId)
+	if err != nil {
+		return false, ErrNotFound
+	}
+
+	if url.UserId != uint(userId) {
+		return false, nil
+	}
+
+	return true, nil
 }
 
 func generateShortKey() string {

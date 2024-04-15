@@ -67,6 +67,17 @@ func (c *WebController) Url(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	isOwner, err := c.urlsService.CheckOwner(uint64(auth.GetUserIdFromContext(r)), uint64(urlId))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	if !isOwner {
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
+
 	url, err := c.urlsService.GetUrl(uint64(urlId))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
