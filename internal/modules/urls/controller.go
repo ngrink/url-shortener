@@ -40,7 +40,7 @@ func (c *UrlsController) CreateUrl(w http.ResponseWriter, r *http.Request) {
 			return
 		} else {
 			utils.WriteError(w, http.StatusInternalServerError, err)
-		return
+			return
 		}
 	}
 
@@ -149,7 +149,7 @@ func (c *UrlsController) RedirectByKey(w http.ResponseWriter, r *http.Request) {
 		remoteAddr = r.RemoteAddr
 	}
 
-	visit, err := c.service.RegisterVisit(url.ID, r.UserAgent(), remoteAddr)
+	_, err = c.service.RegisterVisit(url.ID, r.UserAgent(), remoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
