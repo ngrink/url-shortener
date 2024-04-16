@@ -3,7 +3,9 @@ package urls
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gorilla/mux"
@@ -142,8 +144,8 @@ func (c *UrlsController) RedirectByKey(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c.service.RegisterVisit(url.ID, r.UserAgent(), r.RemoteAddr)
-
+	maxAge := os.Getenv("REDIRECT_CACHE_CONTROL_MAX_AGE")
+	w.Header().Set("Cache-Control", fmt.Sprintf("max-age=%s", maxAge))
 	http.Redirect(w, r, url.OriginalURL, http.StatusMovedPermanently)
 }
 
