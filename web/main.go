@@ -18,7 +18,7 @@ func init() {
 
 func SetupRoutes(r *mux.Router) {
 	pr := r.PathPrefix("/").Subrouter()
-	pr.Use(auth.Authorized)
+	pr.Use(auth.AuthorizedRedirect)
 
 	pr.HandleFunc("/", Controller.Index).Methods("GET")
 	pr.HandleFunc("/urls/{id}", Controller.Url).Methods("GET")
