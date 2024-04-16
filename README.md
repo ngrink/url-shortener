@@ -5,6 +5,8 @@
 ## Demo
 [Link to demo](https://url-shortener.ngrink.ru)
 
+![url-shortener-preview](https://github.com/ngrink/url-shortener/assets/47951318/d489b839-ba0f-4ede-95ed-12d769ebc7e2)
+
 ## Features
 - Registration, authorization
 - Shortening links
