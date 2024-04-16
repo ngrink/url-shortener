@@ -12,8 +12,9 @@
 - Shortening links
 - Custom links
 - Visit statistics
+- Access control
 
-## Technology Stack
+## Technology stack
 Linux, Nginx, REST API, SSR, JWT, Brypt, PostgreSQL  
 Golang, Gorilla/mux, Gorm, Godotenv, html/template
 
@@ -59,10 +60,19 @@ POSTGRES_PASSWORD=<POSTGRES_PASSWORD>
 POSTGRES_DB=<POSTGRES_DB>
 
 JWT_SECRET="jwUjak517ayqnJaBZHu8i9qybzz"
-REDIRECT_CACHE_CONTROL_MAX_AGE=3600
+REDIRECT_CACHE_CONTROL_MAX_AGE=600
 ```
 
-5. Run application
+5. Build and run application
 ```bash
-go run ./cmd/url-shortener
+go build ./cmd/url-shortener
+./url-shortener
+```
+
+### Using prebuilt binaries
+Download prebuilt binaries from the [latest release](https://github.com/ngrink/url-shortener/releases/latest), choose appropriate os/arch version. For example:
+```bash
+wget https://github.com/ngrink/url-shortener/releases/download/v0.2.0/url-shortener_Linux_x86_64.tar.gz
+tar -zxf url-shortener_Linux_x86_64.tar.gz
+./url-shortener
 ```
