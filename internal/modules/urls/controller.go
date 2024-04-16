@@ -144,6 +144,12 @@ func (c *UrlsController) RedirectByKey(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	visit, err := c.service.RegisterVisit(url.ID, r.UserAgent(), r.RemoteAddr)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	maxAge := os.Getenv("REDIRECT_CACHE_CONTROL_MAX_AGE")
 	w.Header().Set("Cache-Control", fmt.Sprintf("max-age=%s", maxAge))
 	http.Redirect(w, r, url.OriginalURL, http.StatusMovedPermanently)
