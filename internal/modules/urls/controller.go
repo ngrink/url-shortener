@@ -144,7 +144,12 @@ func (c *UrlsController) RedirectByKey(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	visit, err := c.service.RegisterVisit(url.ID, r.UserAgent(), r.RemoteAddr)
+	remoteAddr := r.Header.Get("X-Forwarded-For")
+	if remoteAddr == "" {
+		remoteAddr = r.RemoteAddr
+	}
+
+	visit, err := c.service.RegisterVisit(url.ID, r.UserAgent(), remoteAddr)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
